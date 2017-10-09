@@ -1,6 +1,7 @@
 // enable debug for gulp
 /* eslint-disable prefer-object-spread/prefer-object-spread */
 process.env.DEBUG = process.env.DEBUG || 'fcc:*';
+require('dotenv').load();
 
 require('babel-core/register');
 const Rx = require('rx'),
@@ -62,8 +63,10 @@ function resolve(filepath, thisString, withThisString) {
 
 // user definable
 const __DEV__ = !yargs.argv.p;
+const host = process.env.HOST || 'localhost';
 const port = yargs.argv.port || process.env.PORT || '3001';
 const syncPort = yargs.argv['sync-port'] || process.env.SYNC_PORT || '3000';
+
 // make sure sync ui port does not interfere with proxy port
 const syncUIPort = yargs.argv['sync-ui-port'] ||
   process.env.SYNC_UI_PORT ||
@@ -185,7 +188,7 @@ function delRev(dest, manifestName) {
 
 gulp.task('serve', function(cb) {
   let called = false;
-  nodemon({
+  const monitor = nodemon({
     script: paths.server,
     ext: '.jsx .js .json',
     ignore: paths.serverIgnore,
@@ -207,6 +210,14 @@ gulp.task('serve', function(cb) {
         debug('Nodemon will restart due to changes in: ', files);
       }
     });
+
+    process.once('SIGINT', () => {
+      monitor.once('exit', () => {
+        /* eslint-disable no-process-exit */
+        process.exit(0);
+        /* eslint-enable no-process-exit */
+      });
+    });
 });
 
 const syncDepenedents = [
@@ -227,7 +238,7 @@ gulp.task('dev-server', syncDepenedents, function() {
       port: syncUIPort
     },
     proxy: {
-      target: `http://localhost:${port}`,
+      target: `http://${host}:${port}`,
       reqHeaders: ({ url: { hostname } }) => ({
         host: `${hostname}:${syncPort}`
       })

@@ -38,6 +38,7 @@ Working on your first Pull Request? You can learn how from this *free* series [H
 | Prerequisite                                | Version |
 | ------------------------------------------- | ------- |
 | [MongoDB](http://www.mongodb.org/downloads) | `~ ^3`  |
+| [MailHog](https://github.com/mailhog/MailHog) | `~ ^1` |
 | [Node.js](http://nodejs.org)                | `~ ^6`  |
 | npm (comes with Node)                       | `~ ^3`  |
 
@@ -50,11 +51,13 @@ node -v
 mongo --version
 ```
 
+To check your MongoDB version on Windows, you have to locate the installation directory. It is probably located at something like `C:\Program Files\MongoDB\Server\3.4\` where 3.4 is your version number.
+
 If your versions are lower than the prerequisite versions, you should update.
 
 Platform-specific guides to setting up a development environment:
-- [How to clone and setup the freeCodeCamp website on a Windows pc](https://forum.freecodecamp.com/t/how-to-clone-and-setup-the-free-code-camp-website-on-a-windows-pc/19366)
-- [How to Clone and Setup the freeCodeCamp Website on a Mac](https://forum.freecodecamp.com/t/how-to-clone-and-setup-the-freecodecamp-website-on-a-mac/78450)
+- [How to clone and setup the freeCodeCamp website on a Windows pc](https://forum.freecodecamp.org/t/how-to-clone-and-setup-the-free-code-camp-website-on-a-windows-pc/19366)
+- [How to Clone and Setup the freeCodeCamp Website on a Mac](https://forum.freecodecamp.org/t/how-to-clone-and-setup-the-freecodecamp-website-on-a-mac/78450)
 
 ### Forking The Project
 
@@ -158,7 +161,7 @@ $ git push origin [name_of_your_new_branch]
 
 ### Setup Linting
 
-You should have [ESLint running in your editor](http://eslint.org/docs/user-guide/integrations.html), and it will highlight anything doesn't conform to [freeCodeCamp's JavaScript Style Guide](http://forum.freecodecamp.com/t/free-code-camp-javascript-style-guide/19121) (you can find a summary of those rules [here](https://github.com/freeCodeCamp/freeCodeCamp/blob/staging/.eslintrc)).
+You should have [ESLint running in your editor](http://eslint.org/docs/user-guide/integrations.html), and it will highlight anything doesn't conform to [freeCodeCamp's JavaScript Style Guide](http://forum.freecodecamp.org/t/free-code-camp-javascript-style-guide/19121) (you can find a summary of those rules [here](https://github.com/freeCodeCamp/freeCodeCamp/blob/staging/.eslintrc)).
 
 > Please do not ignore any linting errors, as they are meant to **help** you and to ensure a clean and simple code base.
 
@@ -187,11 +190,24 @@ Note: Not all keys are required, to run the app locally, however `MONGOHQ_URL` i
 
 You can leave the other keys as they are. Keep in mind if you want to use more services you'll have to get your own API keys for those services and edit those entries accordingly in the .env file.
 
+Next you should setup MailHog, a local SMTP mail server that will catch all the outgoing freeCodeCamp messages generated locally. How you start up MailHog is dependent upon your OS, but here's an example for MacOS with Brew.
+
+```bash
+brew services start mailhog
+```
+ 
+To access your MailHog inbox, open your browser and navigate to [http://localhost:8025](http://localhost:8025). For any other questions related to MailHog or for instructions on custom configurations, check out the [MailHog](https://github.com/mailhog/MailHog) repository.   
+
 Now you will need to start MongoDB, and then seed the database, then you can start the application:
 
 ```bash
 # Start the mongo server in a separate terminal
+# On OS X:
 mongod
+
+# If you are using Windows, you have to instead specify the full path to the mongod binary
+# Make sure to replace 3.4 with the version you have installed
+"C:\Program Files\MongoDB\Server\3.4\bin\mongod"
 
 # Initialize freeCodeCamp
 # This will seed the database for the first time.
@@ -251,9 +267,9 @@ and ensure all tests pass.
 ### Squash Your Commits
 When you make a pull request, all of your changes need to be in one commit.
 
-If you have made more then one commit, then you will need to _squash_ your commits.
+If you have made more than one commit, then you will need to _squash_ your commits.
 
-To do this, see [Squashing Your Commits](http://forum.freecodecamp.com/t/how-to-squash-multiple-commits-into-one-with-git/13231).
+To do this, see [Squashing Your Commits](http://forum.freecodecamp.org/t/how-to-squash-multiple-commits-into-one-with-git/13231).
 
 ### Creating A Pull Request
 
@@ -271,7 +287,7 @@ related issues in our [Contributors chat room](https://gitter.im/FreeCodeCamp/Co
 
 #### Important: ALWAYS EDIT ON A BRANCH
 
-Take away only one thing from this document, it should be this: Never, **EVER**
+Take away only one thing from this document: Never, **EVER**
 make edits to the `staging` branch. ALWAYS make a new branch BEFORE you edit
 files. This is critical, because if your PR is not accepted, your copy of
 staging will be forever sullied and the only way to fix it is to delete your
@@ -316,13 +332,22 @@ nothing to commit, working directory clean
     add .` to add all unstaged files. Take care, though, because you can
     accidentally add files you don't want added. Review your `git status` first.
 
-6.  Commit your edits: `git commit -m "Brief Description of Commit"`. Do not add the issue number in the commit message.
+6.  Commit your edits (follow any one of the below methods):
+
+    a. Using the inbuilt script (_recommended_):
+       - We have a [tool](https://commitizen.github.io/cz-cli/) that helps you to make standard commit messages. Simply execute `npm run commit` after you have added the necessary files as mentioned in the step earlier.
+
+    b. Using Commitizen CLI:
+       - If you are already using [commitizen](http://commitizen.github.io/cz-cli/), simply doing a `git cz` works as expected too!
 
 7.  Squash your commits, if there are more than one.
 
-8.  Push your commits to your GitHub Fork: `git push -u origin branch/name-here`
+8.  If you would want to add/remove changes to previous commit simply add the files as in Step 5 earlier,
+    and use `git commit --amend` or `git commit --amend --no-edit` (for keeping the same commit message).
 
-9.  Go to [Common Steps](#common-steps)
+9.  Push your commits to your GitHub Fork: `git push -u origin branch/name-here`
+
+10.  Go to [Common Steps](#common-steps)
 
 ##### Method 2: Editing via the GitHub Interface
 
@@ -331,7 +356,7 @@ possible to update your fork via GitHub's interface without deleting and
 recreating your fork.
 
 Read the [Wiki
-article](http://forum.freecodecamp.com/t/how-to-make-a-pull-request-on-free-code-camp/19114)
+article](http://forum.freecodecamp.org/t/how-to-make-a-pull-request-on-free-code-camp/19114)
 for further information
 
 ### Common Steps
@@ -343,7 +368,7 @@ for further information
     branch.
 
 3.  Submit a [pull
-    request](http://forum.freecodecamp.com/t/how-to-contribute-via-a-pull-request/19368)
+    request](http://forum.freecodecamp.org/t/how-to-contribute-via-a-pull-request/19368)
     from your branch to freeCodeCamp's `staging` branch.
 
 4.  The title (also called the subject) of your PR should be descriptive of your
@@ -357,7 +382,7 @@ for further information
 5.  In the body of your PR include a more detailed summary of the changes you
     made and why.
 
-    -   If the PR is meant to fix an existing bug/issue, then, at the end of
+    -   If the PR is meant to fix an existing bug/issue then, at the end of
         your PR's description, append the keyword `closes` and #xxxx (where xxxx
         is the issue number). Example: `closes #1337`. This tells GitHub to
         close the existing issue, if the PR is merged.
@@ -415,22 +440,22 @@ Be sure to post in the PR conversation that you have made the requested changes.
     Challenges](https://github.com/freeCodeCamp/freeCodeCamp/blob/staging/seed/challenge-style-guide.md)
 
 -   [Searching for Your Issue on
-    GitHub](http://forum.freecodecamp.com/t/searching-for-existing-issues/19139)
+    GitHub](http://forum.freecodecamp.org/t/searching-for-existing-issues/19139)
 
 -   [Creating a New GitHub
-    Issue](http://forum.freecodecamp.com/t/creating-a-new-github-issue/18392)
+    Issue](http://forum.freecodecamp.org/t/creating-a-new-github-issue/18392)
 
 -   [Select Issues for Contributing Using
-    Labels](http://forum.freecodecamp.com/t/free-code-camp-issue-labels/19556)
+    Labels](http://forum.freecodecamp.org/t/free-code-camp-issue-labels/19556)
 
 -   [How to clone the freeCodeCamp website on a Windows
-    pc](http://forum.freecodecamp.com/t/how-to-clone-and-setup-the-free-code-camp-website-on-a-windows-pc/19366)
+    pc](http://forum.freecodecamp.org/t/how-to-clone-and-setup-the-free-code-camp-website-on-a-windows-pc/19366)
 
 -   [How to log in to your local FCC site - using
-    GitHub](http://forum.freecodecamp.com/t/how-to-log-in-to-your-local-instance-of-free-code-camp/19552)
+    GitHub](http://forum.freecodecamp.org/t/how-to-log-in-to-your-local-instance-of-free-code-camp/19552)
 
 -   [Writing great git commit
-    messages](http://forum.freecodecamp.com/t/writing-good-git-commit-messages/13210)
+    messages](http://forum.freecodecamp.org/t/writing-good-git-commit-messages/13210)
 
 -   [Contributor Chat Support - For the FCC Repositories, and running a local
     instance](https://gitter.im/FreeCodeCamp/Contributors)
